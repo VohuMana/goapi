@@ -1,0 +1,8 @@
+{
+	"StringKey": "Foo",
+	"NumberKey": 123,
+	"BoolKey": true,
+	"ObjectKey": {
+		"SubStringKey": "Bar"
+	}
+}
