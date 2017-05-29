@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"encoding/hex"
+	"strings"
 )
 
 func GenerateStructName() string {
@@ -64,7 +65,7 @@ func ParseStructs(object map[string]interface{}, name string, structs map[string
 				continue
 		}
 
-		structs[name] = append(structs[name], fmt.Sprintf("%v %v `json:%v`\n", key, valueType, key))
+		structs[name] = append(structs[name], fmt.Sprintf("%v %v `json:%v`\n", strings.Title(key), valueType, key))
 	}
 }
 
@@ -86,12 +87,10 @@ func GetArrayType(arr []interface{}) (string, bool) {
 }
 
 func main() {
-	fileData, err := ioutil.ReadFile("simple.json")
+	fileData, err := ioutil.ReadFile("test.json")
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println(string(fileData))
 
 	// Parse JSON
 	jsonObject := make(map[string]interface{})
@@ -101,7 +100,6 @@ func main() {
 	}
 
 	// Enumerate the interface for all the objects
-	fmt.Println(jsonObject)
 	structs := make(map[string][]string)
 	ParseStructs(jsonObject, GenerateStructName(), structs)
 
