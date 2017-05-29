@@ -15,8 +15,10 @@ func GenerateStructName() string {
     return hex.EncodeToString(randBytes)
 }
 
-func ParseStructs(object map[string]interface{}, name string) {
-	fmt.Printf("type %v struct {\n", name)
+func ParseStructs(object map[string]interface{}, name string, structs map[string][]string) {
+	//fmt.Printf("type %v struct {\n", name)
+	
+	structs[name] = []string{}
 
 	for key,value := range object {
 		valueType := ""
@@ -39,23 +41,23 @@ func ParseStructs(object map[string]interface{}, name string) {
 					switch value.([]interface{})[0].(type) {
 						case map[string]interface{}:
 							valueType = GenerateStructName()
-							ParseStructs(value.([]interface{})[0].(map[string]interface{}), valueType)
+							ParseStructs(value.([]interface{})[0].(map[string]interface{}), valueType, structs)
 					}
 				}
 			
 			case map[string]interface{}:
 				valueType = GenerateStructName()
-				ParseStructs(value.(map[string]interface{}), valueType)
+				ParseStructs(value.(map[string]interface{}), valueType, structs)
 
 			default:
 				fmt.Printf("Don't know how to parse %v\n", key)
 				continue
 		}
 
-		fmt.Printf("%v %v `json:%v`\n", key, valueType, key)
+		structs[name] = append(structs[name], fmt.Sprintf("%v %v `json:%v`\n", key, valueType, key))
 	}
 
-	fmt.Println("}")
+	//fmt.Println("}")
 }
 
 func GetArrayType(arr []interface{}) (string, bool) {
@@ -92,6 +94,14 @@ func main() {
 
 	// Enumerate the interface for all the objects
 	fmt.Println(jsonObject)
+	structs := make(map[string][]string)
+	ParseStructs(jsonObject, GenerateStructName(), structs)
 
-	ParseStructs(jsonObject, GenerateStructName())
+	for structName, members := range structs {
+		fmt.Printf("type %v struct {\n", structName)
+		for _, member := range members {
+			fmt.Printf("\t%v", member)
+		}
+		fmt.Println("}")
+	}
 }
