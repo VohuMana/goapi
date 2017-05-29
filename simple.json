@@ -4,5 +4,6 @@
 	"BoolKey": true,
 	"ObjectKey": {
 		"SubStringKey": "Bar"
-	}
+	},
+	"ArrayStringKey":["One", "Two", "Three"]
 }

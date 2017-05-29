@@ -5,13 +5,22 @@ import (
 	"fmt"
 	"log"
 	"io/ioutil"
+	"math/rand"
+	"encoding/hex"
 )
 
-func ParseStructs(object map[string]interface{}) {
+func GenerateStructName() string {
+	randBytes := make([]byte, 16)
+    rand.Read(randBytes)
+    return hex.EncodeToString(randBytes)
+}
+
+func ParseStructs(object map[string]interface{}, name string) {
+	fmt.Printf("type %v struct {\n", name)
+
 	for key,value := range object {
 		valueType := ""
 
-		// TODO: Add arrays and subobjects
 		switch value.(type) {
 			case string:
 				valueType = "string"
@@ -24,17 +33,20 @@ func ParseStructs(object map[string]interface{}) {
 			
 			case []interface{}:
 				ok := true
+				// TODO: Add arrays of arrays
 				valueType, ok = GetArrayType(value.([]interface{}))
 				if !ok {
 					switch value.([]interface{})[0].(type) {
 						case map[string]interface{}:
-							valueType = "Foo"
-							ParseStructs(value.([]interface{})[0].(map[string]interface{}))
+							valueType = GenerateStructName()
+							ParseStructs(value.([]interface{})[0].(map[string]interface{}), valueType)
 					}
 				}
 			
 			case map[string]interface{}:
-				ParseStructs(value.(map[string]interface{}))
+				valueType = GenerateStructName()
+				ParseStructs(value.(map[string]interface{}), valueType)
+
 			default:
 				fmt.Printf("Don't know how to parse %v\n", key)
 				continue
@@ -42,6 +54,8 @@ func ParseStructs(object map[string]interface{}) {
 
 		fmt.Printf("%v %v `json:%v`\n", key, valueType, key)
 	}
+
+	fmt.Println("}")
 }
 
 func GetArrayType(arr []interface{}) (string, bool) {
@@ -79,5 +93,5 @@ func main() {
 	// Enumerate the interface for all the objects
 	fmt.Println(jsonObject)
 
-	ParseStructs(jsonObject)
+	ParseStructs(jsonObject, GenerateStructName())
 }
