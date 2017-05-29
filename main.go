@@ -60,6 +60,9 @@ func ParseStructs(object map[string]interface{}, name string, structs map[string
 				valueType = GenerateStructName()
 				ParseStructs(value.(map[string]interface{}), valueType, structs)
 
+			case nil:
+				fmt.Printf("Key %v was nil, type is unknown", key)
+
 			default:
 				fmt.Printf("Don't know how to parse %v\n", key)
 				continue
