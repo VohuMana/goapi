@@ -5,5 +5,7 @@
 	"ObjectKey": {
 		"SubStringKey": "Bar"
 	},
-	"ArrayStringKey":["One", "Two", "Three"]
+	"ArrayStringKey":["One", "Two", "Three"],
+	"ArrayOfArrayString": [["One", "Two"],["Uno", "Dos"]],
+	"ArrayOfObject":[{"Hello":"World","Test":1}]
 }

@@ -15,9 +15,28 @@ func GenerateStructName() string {
     return hex.EncodeToString(randBytes)
 }
 
-func ParseStructs(object map[string]interface{}, name string, structs map[string][]string) {
-	//fmt.Printf("type %v struct {\n", name)
-	
+func ParseArray(object []interface{}, structName string, structs map[string][]string) string {
+	typeName, ok := GetArrayType(object)
+	if !ok {
+		switch object[0].(type) {
+			case []interface{}:
+				typeName = "[]" + ParseArray(object[0].([]interface{}), structName, structs)
+			
+			case map[string]interface{}:
+				newStructName := GenerateStructName()
+				typeName = "[]" + newStructName
+				ParseStructs(object[0].(map[string]interface{}), newStructName, structs)
+
+			default:
+				// TODO: Return an error here
+				fmt.Println("Error unknown array type")
+		}
+	}
+
+	return typeName
+}
+
+func ParseStructs(object map[string]interface{}, name string, structs map[string][]string) {	
 	structs[name] = []string{}
 
 	for key,value := range object {
@@ -34,16 +53,7 @@ func ParseStructs(object map[string]interface{}, name string, structs map[string
 				valueType = "bool"
 			
 			case []interface{}:
-				ok := true
-				// TODO: Add arrays of arrays
-				valueType, ok = GetArrayType(value.([]interface{}))
-				if !ok {
-					switch value.([]interface{})[0].(type) {
-						case map[string]interface{}:
-							valueType = GenerateStructName()
-							ParseStructs(value.([]interface{})[0].(map[string]interface{}), valueType, structs)
-					}
-				}
+				valueType = ParseArray(value.([]interface{}), name, structs)			
 			
 			case map[string]interface{}:
 				valueType = GenerateStructName()
@@ -56,8 +66,6 @@ func ParseStructs(object map[string]interface{}, name string, structs map[string
 
 		structs[name] = append(structs[name], fmt.Sprintf("%v %v `json:%v`\n", key, valueType, key))
 	}
-
-	//fmt.Println("}")
 }
 
 func GetArrayType(arr []interface{}) (string, bool) {
