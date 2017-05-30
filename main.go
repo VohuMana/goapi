@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"io/ioutil"
+	"flag"
 
 	"github.com/vohumana/goapi/structbuilder"
 	"github.com/vohumana/goapi/filebuilder"
@@ -11,7 +12,15 @@ import (
 
 
 func main() {
-	fileData, err := ioutil.ReadFile("test.json")
+	var (
+		packageName = flag.String("packagename", "api", "Name of the package used in generated file.")
+		fileName = flag.String("filename", "generated_api.go", "File name/path to output generated structs to.")
+		inputFileName = flag.String("inputfile", "", "Name of the JSON file to parse the API from.")
+	)
+
+	flag.Parse()
+
+	fileData, err := ioutil.ReadFile(*inputFileName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -25,10 +34,10 @@ func main() {
 
 	// Generate the API contract
 	structs := structbuilder.GenerateStructs(jsonObject)
-	apiContract := filebuilder.BuildFile("api", structs)
+	apiContract := filebuilder.BuildFile(*packageName, structs)
 
 	// Write to disk
-	err = ioutil.WriteFile("output.go", []byte(apiContract), 0)
+	err = ioutil.WriteFile(*fileName, []byte(apiContract), 0)
 	if err != nil {
 		log.Fatal(err)
 	}
