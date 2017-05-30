@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"io/ioutil"
 
 	"github.com/vohumana/goapi/structbuilder"
+	"github.com/vohumana/goapi/filebuilder"
 )
 
 
@@ -23,14 +23,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Enumerate the interface for all the objects
+	// Generate the API contract
 	structs := structbuilder.GenerateStructs(jsonObject)
+	apiContract := filebuilder.BuildFile("api", structs)
 
-	for structName, members := range structs {
-		fmt.Printf("type %v struct {\n", structName)
-		for _, member := range members {
-			fmt.Printf("\t%v", member)
-		}
-		fmt.Println("}")
+	// Write to disk
+	err = ioutil.WriteFile("output.go", []byte(apiContract), 0)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
