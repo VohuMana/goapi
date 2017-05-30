@@ -65,7 +65,7 @@ func parseStructs(object map[string]interface{}, name string, structs map[string
 				continue
 		}
 
-		structs[name] = append(structs[name], fmt.Sprintf("%v %v `json:%v`\n", strings.Title(key), valueType, key))
+		structs[name] = append(structs[name], fmt.Sprintf("%v %v `json:\"%v\"`\n", strings.Title(key), valueType, key))
 	}
 }
 
