@@ -27,7 +27,7 @@ func TestSimpleJson(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	structs := GenerateStructs(jsonObject)
+	structs := GenerateStructs(jsonObject, false)
 
 	for _,v := range structs {
 		compareMembers(expectedMembers, v, t)
@@ -43,7 +43,7 @@ func TestMultipleJsonFields(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	structs := GenerateStructs(jsonObject)
+	structs := GenerateStructs(jsonObject, false)
 
 	for _,v := range structs {
 		compareMembers(expectedMembers, v, t)
@@ -59,7 +59,7 @@ func TestMultipleObjects(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	structs := GenerateStructs(jsonObject)
+	structs := GenerateStructs(jsonObject, false)
 
 	if len(structs) != 2 {
 		t.Fatalf("Expected number of objects to be 2, got %v", len(structs))

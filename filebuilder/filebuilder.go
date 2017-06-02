@@ -15,7 +15,7 @@ func BuildFile(packageName string, structs map[string][]string) string {
 		for _, member := range members {
 			buffer.WriteString(fmt.Sprintf("\t%v", member))
 		}
-		buffer.WriteString(fmt.Sprintf("}\n"))
+		buffer.WriteString(fmt.Sprintf("}\n\n"))
 	}
 
 	return buffer.String()
