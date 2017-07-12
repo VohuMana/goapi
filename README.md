@@ -13,8 +13,11 @@ Generate the Go structs, used to serialize/deserialize JSON schemas, without hav
 
 ## Flags
 `inputfile` - This is the input JSON schema you want to generate Go structs for.
+
 `filename` - The output filename, this is a file that will be created. Examples include `myapi.go`, `WeatherApi.go`, etc.
+
 `packagename` - The name of the package the new file will be a part of. Examples include `main`, `api`, `webapi`, etc.
+
 `usekeynames` - This tells the program to name structs based off the key names in the JSON schema, if this is not specified the program will use randomly generated strings for type names.  The random strings will need to be replaced before compiling but a simple find and replace should work.
 
 ## Issues
