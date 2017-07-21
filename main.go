@@ -17,6 +17,7 @@ func main() {
 		fileName = flag.String("filename", "generated_api.go", "File name/path to output generated structs to.")
 		inputFileName = flag.String("inputfile", "", "Name of the JSON file to parse the API from.")
 		useKeyNames = flag.Bool("usekeynames", false, "Add this to use key names for struct names.  If this is not specified it will generate a random hex string.")
+		allowNull = flag.Bool("allownull", true, "Allows null values in the JSON schema, these values will be interface{}")
 	)
 
 	flag.Parse()
@@ -34,7 +35,7 @@ func main() {
 	}
 
 	// Generate the API contract
-	structs := structbuilder.GenerateStructs(jsonObject, *useKeyNames)
+	structs := structbuilder.GenerateStructs(jsonObject, *useKeyNames, *allowNull)
 	apiContract := filebuilder.BuildFile(*packageName, structs)
 
 	// Write to disk

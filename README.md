@@ -20,5 +20,7 @@ Generate the Go structs, used to serialize/deserialize JSON schemas, without hav
 
 `usekeynames` - This tells the program to name structs based off the key names in the JSON schema, if this is not specified the program will use randomly generated strings for type names.  The random strings will need to be replaced before compiling but a simple find and replace should work.
 
+`allownull` - If the JSON object contains a null value, adding this flag will still add it to the generated code with the generic type of interface{}
+
 ## Issues
 File any issues or feature requests to this repo and I'll get to them when I can.

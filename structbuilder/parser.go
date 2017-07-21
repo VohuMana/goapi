@@ -13,12 +13,12 @@ func generateStructName() string {
     return hex.EncodeToString(randBytes)
 }
 
-func parseArray(object []interface{}, structs map[string][]string, useKeyNames bool, keyName string) string {
+func parseArray(object []interface{}, structs map[string][]string, useKeyNames, allowNull bool, keyName string) string {
 	typeName, ok := getArrayType(object)
 	if !ok {
 		switch object[0].(type) {
 			case []interface{}:
-				typeName = "[]" + parseArray(object[0].([]interface{}), structs, useKeyNames, keyName)
+				typeName = "[]" + parseArray(object[0].([]interface{}), structs, useKeyNames, allowNull, keyName)
 			
 			case map[string]interface{}:
 				var newStructName string
@@ -28,7 +28,7 @@ func parseArray(object []interface{}, structs map[string][]string, useKeyNames b
 					newStructName = generateStructName()
 				}
 				typeName = "[]" + newStructName
-				parseStructs(object[0].(map[string]interface{}), newStructName, structs, useKeyNames)
+				parseStructs(object[0].(map[string]interface{}), newStructName, structs, useKeyNames, allowNull)
 
 			default:
 				// TODO: Return an error here
@@ -39,7 +39,7 @@ func parseArray(object []interface{}, structs map[string][]string, useKeyNames b
 	return typeName
 }
 
-func parseStructs(object map[string]interface{}, name string, structs map[string][]string, useKeyNames bool) {	
+func parseStructs(object map[string]interface{}, name string, structs map[string][]string, useKeyNames, allowNull bool) {	
 	structs[name] = []string{}
 
 	for key,value := range object {
@@ -56,7 +56,7 @@ func parseStructs(object map[string]interface{}, name string, structs map[string
 				valueType = "bool"
 			
 			case []interface{}:
-				valueType = parseArray(value.([]interface{}), structs, useKeyNames, strings.Title(key))
+				valueType = parseArray(value.([]interface{}), structs, useKeyNames, allowNull, strings.Title(key))
 			
 			case map[string]interface{}:
 				if useKeyNames {
@@ -64,10 +64,14 @@ func parseStructs(object map[string]interface{}, name string, structs map[string
 				} else {
 					valueType = generateStructName()
 				}
-				parseStructs(value.(map[string]interface{}), valueType, structs, useKeyNames)
+				parseStructs(value.(map[string]interface{}), valueType, structs, useKeyNames, allowNull)
 
 			case nil:
-				fmt.Printf("Key %v was nil, type is unknown", key)
+				if allowNull {
+					valueType = "interface{}"
+				} else {
+					fmt.Printf("Key %v was nil, type is unknown", key)
+				}
 
 			default:
 				fmt.Printf("Don't know how to parse %v\n", key)
@@ -96,8 +100,8 @@ func getArrayType(arr []interface{}) (string, bool) {
 }
 
 // GenerateStructs generates the golang structs from a map.  The return value is a map of struct names to an array of struct members.
-func GenerateStructs(object map[string]interface{}, useKeyNames bool) map[string][]string{
+func GenerateStructs(object map[string]interface{}, useKeyNames, allowNull bool) map[string][]string{
 	structs := make(map[string][]string)
-	parseStructs(object, "RootObject", structs, useKeyNames)
+	parseStructs(object, "RootObject", structs, useKeyNames, allowNull)
 	return structs
 }
